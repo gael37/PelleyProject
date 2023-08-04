@@ -14,8 +14,14 @@ class User(AbstractUser):
     title = models.CharField(max_length=300)
     date_of_birth = models.DateField(
         max_length=15, default=None, blank=True, null=True)
-    courses_completed = models.IntegerField(
-        max_length=3, default=None, blank=True, null=True)
+    courses_completed = models.ManyToManyField(
+        'courses.Course',
+        related_name='completed_by',
+    )
+    courses_started = models.ManyToManyField(
+        'courses.Course',
+        related_name='started_by',
+    )
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}, as {self.username}'
