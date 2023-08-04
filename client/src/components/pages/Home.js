@@ -123,6 +123,9 @@ const Home = () => {
                     {/* <div className='sized-div'>
                       <h4 className='course-card-certificate'><i className="fa-solid fa-certificate"></i> Earn {course.CE_credits} CE credits</h4>
                     </div> */}
+                    <div className='sized-div'>
+                      <h4 className='course-card-certificate'><i className="fa-solid fa-users-rectangle"></i> Includes a 1h live session</h4>
+                    </div>
                     <div className='big-div'>
                       <p className='course-card-description'>{course.description}</p>
                     </div>

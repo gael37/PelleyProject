@@ -1,7 +1,10 @@
 const Login = () => {
 
   return (
-    <h1>Login</h1>
+    <main className='home-container'>
+
+      <h1>Login</h1>
+    </main>
   )
 
 }
