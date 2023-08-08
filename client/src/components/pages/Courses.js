@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 
-import bigImage from '../../assets/images/accountant-main.webp'
-
 
 const Courses = () => {
 
@@ -39,6 +37,8 @@ const Courses = () => {
       setErrors(true)
     }
   }
+
+
 
   useEffect(() => {
     getCourses()
@@ -105,19 +105,14 @@ const Courses = () => {
   }
 
   const handleClear = () => {
-    // setSelectSize('small')
     setSelectedInstructor('All instructors')
     setSelectedTopic('All topics')
-    // setNoMatch(false)
     setFilteredCourses(courses)
   }
-  //   useEffect(() => {
-  // setFilteredCourses(filteredByTopic)
-  //   }, filteredByTopic)
+
 
   return (
     <main className='home-container courses-container'>
-
       <section className='text-image-section not-bold'>
         <h4>Explore our educational course catalog and combine expanding your skills with
           earning continuing education credits.
@@ -125,7 +120,7 @@ const Courses = () => {
 
       </section>
       <div className="flex">
-        <input placeholder="🔎 Search by keyword" value={typed} onChange={handleType}></input>
+        <input placeholder="🔎 Search" value={typed} onChange={handleType}></input>
         <select onChange={handleSelectTopic} value={selectedTopic}>
           <option value='All'>All topics</option>
           <option value='Financial accounting'>Financial accounting</option>
@@ -138,7 +133,6 @@ const Courses = () => {
           {instructors &&
             instructors.map(instructor => {
               return (
-                // <option key={instructor.id} value='${instructor.first_name} ${instructor.last_name}'>{instructor.first_name} {instructor.last_name}</option>
                 <option key={instructor.id} value={instructor.id}>{instructor.first_name} {instructor.last_name}</option>
               )
             })
@@ -156,53 +150,36 @@ const Courses = () => {
             return (
               <div key={course.id} className='course-card'>
                 <Link className='link link-nav' to={`/courses/${course.id}`}>
+
                   <div className="course-card-image" style={{ backgroundImage: `url(${course.image})` }}></div>
+
+
                   <div className='course-card-text'>
                     <div className='flex-title-length'>
                       <h4 className='course-card-title'>{course.title}</h4>
-                      <button className='length'>{course.length}h</button>
-                    </div>
-                    {/* <div className='instructor-div'>
-                      {course.instructors.map(instructor => {
-                        return (
-                          <div key={instructor.id} className='instructor-div'>
-                            <img src={instructor.profile_picture} alt="instructor-thumbnail" />
-                            <p>{instructor.first_name} {instructor.last_name}</p>
-                          </div>
-                        )
-                      })}
-                    </div> */}
 
-                    {/* <div className='sized-div'>
-                      <h4 className='course-card-certificate'><i className="fa-solid fa-certificate"></i> Earn {course.CE_credits} CE credits</h4>
-                    </div> */}
-                    <div className='sized-div'>
-                      <h4 className='course-card-certificate'><i className="fa-solid fa-users-rectangle"></i> Includes a 1h live session</h4>
+                      <button className='length'>{course.length}h</button>
+
                     </div>
+
+                    <div className='sized-div'>
+                      {course.id === 2 || course.id === 6 ?
+                        <h4 className='course-card-certificate'><i className="fa-solid fa-tv"></i> Individual work only</h4>
+
+                        :
+                        <h4 className='course-card-certificate'><i className="fa-solid fa-users-rectangle"></i> Includes a 1h live session</h4>
+
+                      }                    </div>
                     <div className='big-div'>
                       <p className='course-card-description'>{course.description}</p>
                     </div>
                     <div className='sized-div'>
                       <h4 className='course-card-certificate'><i className="fa-solid fa-graduation-cap"></i>  Earn a certificate / {course.CE_credits} CE credits</h4>
                     </div>
-                    {/* <div className='small-div'>
-                      <p className='course-card-topics'><i className="fa-regular fa-clipboard"></i> Topics covered:</p>
-                    </div> */}
-                    {/* <div className='big-div'>
-                      {course.categories.map(category => {
-                        return (
-                          <div key={category.id} className='flex-categories'><i className="fa-solid fa-check green "></i> {category.name}</div>
-                        )
-                      })}
-                    </div> */}
-                    {/* <div className='small-div'>
-                      <p className='course-card-topics'><i className="fa-solid fa-chalkboard-user"></i> Instructors:</p>
-                    </div> */}
-                    {/* <div className='sized-div'>
-                      <p>Instructor</p>
-                    </div> */}
 
                   </div>
+
+
                 </Link>
               </div>
             )
@@ -210,6 +187,7 @@ const Courses = () => {
         </div>
       </section >
     </main >
+
 
   )
 

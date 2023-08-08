@@ -21,6 +21,11 @@ class Course(models.Model):
         'categories.Category',
         related_name="courses"
     )
+    completed_by = models.ManyToManyField(
+        'jwt_auth.User',
+        related_name='courses_completed',
+        blank=True
+    )
 
     def __str__(self):
         return f'{self.title}'

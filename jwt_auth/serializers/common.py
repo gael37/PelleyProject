@@ -38,5 +38,4 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'postcode', 'title',
-                  'profile_image', 'courses_completed', 'courses_in_progress', 'date_of_birth', 'password', 'password_confirmation')
+        fields = '__all__'

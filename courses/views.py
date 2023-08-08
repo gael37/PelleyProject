@@ -39,3 +39,19 @@ class CourseDetailView(APIView):
         course = self.get_course(pk)
         serialized_course = PopulatedCourseSerializer(course)
         return Response(serialized_course.data)
+
+    # UPDATE SINGLE course
+    def put(self, request, pk):
+        course = self.get_course(pk)
+        try:
+            # We need to add both the instance and the user request body data into the serializer when updating an existing record
+            # It will ask for all fields unless you add partial=True
+            course_to_update = CourseSerializer(
+                course, request.data, partial=True)
+            if course_to_update.is_valid():
+                course_to_update.save()
+                return Response(course_to_update.data, status.HTTP_202_ACCEPTED)
+            print(course_to_update.errors)
+            return Response(course_to_update.errors, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

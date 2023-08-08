@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { isAuthenticated, getToken, getPayload } from '../../helpers/auth'
 
 import bigImage from '../../assets/images/accountant-main.webp'
 import chris from '../../assets/images/instructor-chris-pelley.png'
+
 
 
 const Home = () => {
@@ -15,9 +17,15 @@ const Home = () => {
   const [errors, setErrors] = useState(false)
 
   const navigate = useNavigate()
-
+  const currentUserPayload = getPayload()
+  const currentUserId = parseInt(currentUserPayload.sub)
+  console.log('user id', currentUserId)
+  console.log('type of current user id', typeof (currentUserId))
   const goToCourses = () => {
     navigate('/courses')
+  }
+  const goToCoursesLoggedIn = () => {
+    navigate('/courses-logged-in')
   }
 
   const goToAbout = () => {
@@ -64,8 +72,11 @@ const Home = () => {
           <h4>Explore our educational course catalog and combine expanding your skills with
             earning continuing education credits.
           </h4>
-          <button className='action-btn' onClick={goToCourses}>View Courses</button>
-
+          {isAuthenticated() ?
+            <button className='action-btn' onClick={goToCoursesLoggedIn}>View Courses</button>
+            :
+            <button className='action-btn' onClick={goToCourses}>View Courses</button>
+          }
         </div>
         <div className="big-image-container">
           <img src={bigImage} alt='Accountant working' />
@@ -103,53 +114,77 @@ const Home = () => {
             return (
               <div key={course.id} className='course-card'>
                 <Link className='link link-nav' to={`/courses/${course.id}`}>
-                  <div className="course-card-image" style={{ backgroundImage: `url(${course.image})` }}></div>
-                  <div className='course-card-text'>
-                    <div className='flex-title-length'>
-                      <h4 className='course-card-title'>{course.title}</h4>
-                      <button className='length'>{course.length}h</button>
-                    </div>
-                    {/* <div className='instructor-div'>
-                      {course.instructors.map(instructor => {
-                        return (
-                          <div key={instructor.id} className='instructor-div'>
-                            <img src={instructor.profile_picture} alt="instructor-thumbnail" />
-                            <p>{instructor.first_name} {instructor.last_name}</p>
-                          </div>
-                        )
-                      })}
-                    </div> */}
+                  {course.completed_by.length > 0 && isAuthenticated() &&
+                    course.completed_by.includes(parseInt(currentUserId)) ?
+                    <>
+                      < div className="course-card-image blurred" style={{ backgroundImage: `url(${course.image})` }}></div>
+                    </>
+                    :
+                    <div className="course-card-image" style={{ backgroundImage: `url(${course.image})` }}></div>
+                  }
+                  {course.completed_by.length > 0 && !course.completed_by.includes(parseInt(currentUserId)) && isAuthenticated() ?
+                    <div className='course-card-text blurred'>
+                      <div className='flex-title-length'>
+                        <h4 className='course-card-title'>{course.title}</h4>
+                        {course.completed_by.includes(course.id) &&
+                          <button className='length'>{course.length}h</button>
+                        }
+                      </div>
 
-                    {/* <div className='sized-div'>
-                      <h4 className='course-card-certificate'><i className="fa-solid fa-certificate"></i> Earn {course.CE_credits} CE credits</h4>
-                    </div> */}
-                    <div className='sized-div'>
-                      <h4 className='course-card-certificate'><i className="fa-solid fa-users-rectangle"></i> Includes a 1h live session</h4>
-                    </div>
-                    <div className='big-div'>
-                      <p className='course-card-description'>{course.description}</p>
-                    </div>
-                    <div className='sized-div'>
-                      <h4 className='course-card-certificate'><i className="fa-solid fa-graduation-cap"></i>  Earn a certificate / {course.CE_credits} CE credits</h4>
-                    </div>
-                    {/* <div className='small-div'>
-                      <p className='course-card-topics'><i className="fa-regular fa-clipboard"></i> Topics covered:</p>
-                    </div> */}
-                    {/* <div className='big-div'>
-                      {course.categories.map(category => {
-                        return (
-                          <div key={category.id} className='flex-categories'><i className="fa-solid fa-check green "></i> {category.name}</div>
-                        )
-                      })}
-                    </div> */}
-                    {/* <div className='small-div'>
-                      <p className='course-card-topics'><i className="fa-solid fa-chalkboard-user"></i> Instructors:</p>
-                    </div> */}
-                    {/* <div className='sized-div'>
-                      <p>Instructor</p>
-                    </div> */}
+                      <div className='sized-div'>
+                        {course.id === 2 || course.id === 6 ?
+                          <h4 className='course-card-certificate'><i className="fa-solid fa-tv"></i> Individual work only</h4>
 
-                  </div>
+                          :
+                          <h4 className='course-card-certificate'><i className="fa-solid fa-users-rectangle"></i> Includes a 1h live session</h4>
+
+                        }
+                      </div>
+                      <div className='big-div'>
+                        <p className='course-card-description'>{course.description}</p>
+                      </div>
+                      <div className='sized-div'>
+                        <h4 className='course-card-certificate'><i className="fa-solid fa-graduation-cap"></i>  Earn a certificate / {course.CE_credits} CE credits</h4>
+                      </div>
+
+                    </div>
+                    :
+                    <div className='course-card-text'>
+                      <div className='flex-title-length'>
+                        <h4 className='course-card-title'>{course.title}</h4>
+                        {/* {course.completed_by.length > 0 && course.completed_by.includes(parseInt(currentUserId)) && */}
+                        <button className='length'>{course.length}h</button>
+                        {/* } */}
+                      </div>
+
+                      <div className='sized-div'>
+                        {course.id === 2 || course.id === 6 ?
+                          <h4 className='course-card-certificate'><i className="fa-solid fa-tv"></i> Individual work only</h4>
+
+                          :
+                          <h4 className='course-card-certificate'><i className="fa-solid fa-users-rectangle"></i> Includes a 1h live session</h4>
+
+                        }
+                      </div>
+                      <div className='big-div'>
+                        <p className='course-card-description'>{course.description}</p>
+                      </div>
+                      <div className='sized-div'>
+                        <h4 className='course-card-certificate'><i className="fa-solid fa-graduation-cap"></i>  Earn a certificate / {course.CE_credits} CE credits</h4>
+                      </div>
+
+                    </div>
+
+                  }
+                  {course.completed_by.length > 0 && course.completed_by.includes(parseInt(currentUserId)) && isAuthenticated() &&
+                    <button className='length course-completed'><i className="fa-solid fa-check"></i> Course completed</button>
+                  }
+                  {course.started_by.length > 0 && !course.started_by.includes(parseInt(currentUserId)) && isAuthenticated() &&
+                    <button className='length course-completed course-started'><i className="fa-solid fa-check"></i> Course started</button>
+                  }
+                  {/* {userData.courses_completed.length > 0 && userData.courses_completed.includes(course.id) &&
+                        <button className='length course-completed'><i className="fa-solid fa-check"></i> Course completed</button>
+                      } */}
                 </Link>
               </div>
             )
@@ -157,7 +192,12 @@ const Home = () => {
         </div>
       </section >
 
-      <button className='action-btn btn-margin-top' onClick={goToCourses}>View All Courses</button>
+      {isAuthenticated() ?
+        <button className='action-btn btn-margin-top' onClick={goToCoursesLoggedIn}>View All Courses</button>
+        :
+        <button className='action-btn btn-margin-top' onClick={goToCourses}>View All Courses</button>
+      }
+
 
     </main >
 
